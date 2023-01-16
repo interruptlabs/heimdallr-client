@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "heimdallr-client"
+version = "0.4.0"
+description = "URI handler for IDA Pro"
+authors = ["Robert S <info@interruptlabs.co.uk>"]
+readme = "README.md"
+packages = [
+    { include = "heimdallr_client" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+heimdallr-grpc = { git = "ssh://git@github.com/interruptlabs/heimdallr-grpc.git""}
+easygui = { version = "^0.98.3", markers = "platform_system == 'Linux'"}
+
+[tool.poetry.scripts]
+heimdallr_client = "heimdallr_client.heimdallr_client:start"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
