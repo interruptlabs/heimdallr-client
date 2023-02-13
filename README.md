@@ -8,14 +8,14 @@ The Heimdallr client is registered as a system wide URI handler. This means that
 
 1. Install [heimdallr-ida](https://github.com/interruptlabs/heimdallr-ida)
 2. Install heimdallr-client with pip
-    a. Using git directly `pip3 install -e git+ssh://git@github.com/interruptlabs/heimdallr-client.git#egg=heimdallr_client`
-    b. From a cloned repo `pip3 install -e .`
+    - Using git directly `pip3 install -e git+ssh://git@github.com/interruptlabs/heimdallr-client.git#egg=heimdallr_client`
+    - From a cloned repo `pip3 install -e .`
 3. Verify `settings.json` has been created in the relevant application directory
-    a. MacOS/Linux - `$HOME/.config/heimdallr/`
-    b. Windows - `%APPDATA%/heimdallr/`
+    - MacOS/Linux - `$HOME/.config/heimdallr/`
+    - Windows - `%APPDATA%/heimdallr/`
 4. Modify `settings.json` to be accurate for your system
-    a. `ida_location` is the location of your IDA Installation (should be automatically filled)
-    b. `idb_path` is an array of locations for the heimdallr client to search for corosponding idbs
+    - `ida_location` is the location of your IDA Installation (should be automatically filled)
+    - `idb_path` is an array of locations for the heimdallr client to search for corosponding idbs
 
 ## MacOS
 
