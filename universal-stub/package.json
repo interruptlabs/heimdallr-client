@@ -15,6 +15,7 @@
   "author": "roberts",
   "license": "GPL",
   "dependencies": {
+    "electron-builder": "^22.10.3",
     "electron-squirrel-startup": "^1.0.0"
   },
   "devDependencies": {
