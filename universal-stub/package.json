@@ -1,5 +1,5 @@
 {
-  "name": "Heimdallr Universal Stub",
+  "name": "heimdallr-stub",
   "productName": "heimdallr-stub",
   "version": "0.0.1",
   "description": "WIP: Cross-platform stub to hook URLs for Heimdallr",
