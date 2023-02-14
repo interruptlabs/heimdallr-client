@@ -11,13 +11,11 @@
     "publish": "electron-forge publish",
     "lint": "echo \"No linting configured\""
   },
-  {
-    "repository": {
-      "type": "git",
-      "url": "https://github.com/interruptlabs/heimdallr-client.git",
-      "directory": "universal-stub/"
-    }
-  }
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/interruptlabs/heimdallr-client.git",
+    "directory": "universal-stub/"
+  },
   "keywords": [],
   "author": "roberts",
   "license": "GPL",
