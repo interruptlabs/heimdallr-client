@@ -1,8 +1,8 @@
 {
-  "name": "uri-test",
-  "productName": "uri-test",
-  "version": "1.0.0",
-  "description": "My Electron application description",
+  "name": "Heimdallr Universal Stub",
+  "productName": "heimdallr-stub",
+  "version": "0.0.1",
+  "description": "WIP: Cross-platform stub to hook URLs for Heimdallr",
   "main": "src/index.js",
   "scripts": {
     "start": "electron-forge start",
