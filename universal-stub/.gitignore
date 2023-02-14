@@ -1,2 +1,2 @@
-universal-stub/out/**
-universal-stub/node_modules/**
+universal-stub/out/
+universal-stub/node_modules/
