@@ -20,7 +20,7 @@ jobs:
           node-version: 18
 
       - name: Build/release Electron app
-        uses:  yinxulai/actions-electron-forge@v1
+        uses: yinxulai/actions-electron-forge@0.05
 
         with:
           package_root: "./universal-stub/"
