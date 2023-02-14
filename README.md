@@ -1,6 +1,6 @@
 # Introduction 
 
-**BETA SUPPORT ONLY - MAC OS SUPPORT ONLY**
+**BETA SUPPORT ONLY - MAC OS SUPPORT ONLY - CROSS PLATFORM RELEASES WIP**
 
 The Heimdallr client is registered as a system wide URI handler. This means that anywhere a URL can be invoked we can link to a location in IDA.
 
