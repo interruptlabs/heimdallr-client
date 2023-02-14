@@ -20,7 +20,7 @@ jobs:
           node-version: 18
 
       - name: Build/release Electron app
-        uses: KL13NT/action-electron-forge@0.0.1
+        uses: KL13NT/action-electron-forge@9c2ad05cca5b9d3eb6026b39c7c3fe7d8cf80b2e
         with:
           package_root: "./universal-stub/"
           # GitHub token, automatically provided to the action
