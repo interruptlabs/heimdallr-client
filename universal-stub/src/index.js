@@ -10,7 +10,7 @@ if (process.defaultApp) {
     app.setAsDefaultProtocolClient('ida-test')
 }
 console.log(`You arrived from: ${process.argv[1]}\n`)
-pyProc = require('child_process').spawn('heimdallr_client', ['ida://test'])
+pyProc = require('child_process').spawn('heimdallr_client', [process.argv[1]])
 
 if (pyProc != null) {
   console.log('child process success')
