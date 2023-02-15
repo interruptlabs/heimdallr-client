@@ -30,7 +30,7 @@ heimdallr_client = config.heimdallr_client
 console.log(heimdallr_client)
 
 // Register URL handlers
-if (process.argv.length >= 2) {
+if (process.argv.length >= 2 && process.argv[1].startsWith("ida://")) {
   heimdallrURL(process.argv[1])
 }
 
