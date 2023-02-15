@@ -6,11 +6,11 @@ roberts@RobertS-IL-Mac heimdallr_client % whereis heimdallr_client
 heimdallr_client: /opt/homebrew/bin/heimdallr_client
 ```
 2. Open `./macos-stub/heimdallrd.scpt` in Script Editor (double click)
-![example script window](images/Screenshot%202022-12-29%20at%2018.34.42.png)
+![example script window](../images/Screenshot%202022-12-29%20at%2018.34.42.png)
 3. Change the `heimdallr_client` path to be valid for your system
 4. Export it as an Application (File -> Export...)
     a. Ensure "File Format" is "Application"
-![example export window](images/Screenshot%202022-12-29%20at%2018.36.58.png)
+![example export window](../images/Screenshot%202022-12-29%20at%2018.36.58.png)
 5. Modify the `Info.plist` file to add the following text between it's first set of dictionary tags
 ```
     <key>CFBundleURLTypes</key>
