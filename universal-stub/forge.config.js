@@ -24,4 +24,16 @@ module.exports = {
       }
     }
   ],
+  publishers: [
+    {
+      name: '@electron-forge/publisher-github',
+      config: {
+        repository: {
+          owner: 'interruptlabs',
+          name: 'heimdallr-client'
+        },
+        prerelease: true
+      }
+    }
+  ],
 };
