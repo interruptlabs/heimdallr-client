@@ -3,7 +3,7 @@ module.exports = {
     "protocols": [
       {
         "name": "IDA Heimdallr Deeplink",
-        "schemes": ["ida-test"]
+        "schemes": ["ida"]
       }
     ]
   },
@@ -20,7 +20,7 @@ module.exports = {
     {
       name: '@electron-forge/maker-deb',
       "config": {
-        "mimeType": ["x-scheme-handler/ida-test"]
+        "mimeType": ["x-scheme-handler/ida"]
       }
     }
   ],

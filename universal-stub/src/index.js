@@ -4,10 +4,10 @@ const path = require('path')
 
 if (process.defaultApp) {
   if (process.argv.length >= 2) {
-    app.setAsDefaultProtocolClient('ida-test', process.execPath, [path.resolve(process.argv[1])])
+    app.setAsDefaultProtocolClient('ida', process.execPath, [path.resolve(process.argv[1])])
   }
 } else {
-    app.setAsDefaultProtocolClient('ida-test')
+    app.setAsDefaultProtocolClient('ida')
 }
 console.log(`You arrived from: ${process.argv[1]}\n`)
 pyProc = require('child_process').spawn('heimdallr_client', [process.argv[1]])
