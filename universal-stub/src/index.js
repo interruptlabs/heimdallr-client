@@ -5,6 +5,9 @@ const path = require('path')
 
 // Stop GPU process, optimise start speed
 app.disableHardwareAcceleration()
+app.setAsDefaultProtocolClient('ida')
+
+console.log(process.argv)
 
 // Load config for heimdallr_client
 if (process.platform == "win32") {
@@ -27,16 +30,12 @@ heimdallr_client = config.heimdallr_client
 console.log(heimdallr_client)
 
 // Register URL handlers
-if (process.defaultApp) {
-  if (process.argv.length >= 2) {
-    app.setAsDefaultProtocolClient('ida')
-    heimdallrURL(process.argv[1])
-  }
-} else {
-    app.setAsDefaultProtocolClient('ida')
+if (process.argv.length >= 2) {
+  heimdallrURL(process.argv[1])
 }
 
 function heimdallrURL(url){
+  console.log(url)
   // Spawn Python
   pyProc = require('child_process').spawnSync(heimdallr_client, [url], {shell: true})
   // dialog.showErrorBox('URL Done', url)
