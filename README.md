@@ -46,7 +46,7 @@ heimdallr_client: /opt/homebrew/bin/heimdallr_client
     </dict>
     </array>
 ```
-(an example Info.plist is in `./macos-stub/Info.plist)
+(an example Info.plist is in `./macos-stub/Info.plist`)
 6. Move the Application Bundle to /Applications/ and resign it:
 `codesign --force -s - /Applications/heimdallrd.app` 
 7. Run the Application bundle (double click) to register it with the system as a URI handler.
