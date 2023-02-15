@@ -1,3 +1,4 @@
 universal-stub/out/
 universal-stub/node_modules/
 .DS_Store
+**/__pycache__/
