@@ -8,7 +8,6 @@ app.disableHardwareAcceleration()
 app.setAsDefaultProtocolClient('ida')
 
 console.log(process.argv)
-
 // Load config for heimdallr_client
 if (process.platform == "win32") {
   config_path = path.join(process.env.APPDATA, "heimdallr/settings.json")
@@ -37,7 +36,7 @@ if (process.argv.length >= 2 && process.argv[1].startsWith("ida://")) {
 function heimdallrURL(url){
   console.log(url)
   // Spawn Python
-  pyProc = require('child_process').spawnSync(heimdallr_client, [url], {shell: true})
+  pyProc = require('child_process').spawnSync(heimdallr_client, [url])
   // dialog.showErrorBox('URL Done', url)
 
   // Check output
@@ -69,6 +68,7 @@ if (!gotTheLock) {
   // Linux/Darwin
   app.on('open-url', (event, url) => {
     clearTimeout(exit_timeout)
+    dialog.showErrorBox("Msg", `URL is ${url}`)
     heimdallrURL(`${url}`)
   })
 }
