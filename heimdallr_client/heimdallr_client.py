@@ -487,6 +487,7 @@ def check_lock(idb_name : str, file_hash : str) -> bool:
 def run(url):
     idb_name = None
     file_hash = None
+    locked = False
     try:
         url = unquote(url)
         log.info(f"Trying to resolve URI: {url}")
@@ -508,9 +509,11 @@ def run(url):
         idb_name = parsed_url.netloc
         file_hash = query.get("hash", None)
         
+        locked = True
         lock_search(idb_name, file_hash)
         if not check_lock(idb_name, file_hash):
             raise RuntimeError("Can only have request for single database at a time!")
+        
 
 
         finished = False
@@ -558,7 +561,7 @@ def run(url):
 
         log.debug(f"RPC client received: {response.Response}" )
     finally:
-        if idb_name and file_hash:
+        if locked:
             release_lock()
 
 def start():
