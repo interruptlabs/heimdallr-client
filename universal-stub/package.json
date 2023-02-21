@@ -1,7 +1,7 @@
 {
   "name": "heimdallr-stub",
   "productName": "heimdallr-stub",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "WIP: Cross-platform stub to hook URLs for Heimdallr",
   "main": "src/index.js",
   "scripts": {
