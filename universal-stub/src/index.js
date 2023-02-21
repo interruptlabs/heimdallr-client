@@ -68,7 +68,6 @@ if (!gotTheLock) {
   // Linux/Darwin
   app.on('open-url', (event, url) => {
     clearTimeout(exit_timeout)
-    dialog.showErrorBox("Msg", `URL is ${url}`)
     heimdallrURL(`${url}`)
   })
 }
