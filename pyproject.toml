@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "heimdallr-client"
-version = "0.5.1"
+version = "0.5.2"
 description = "URI handler for IDA Pro"
 authors = ["Robert S <info@interruptlabs.co.uk>"]
 readme = "README.md"
