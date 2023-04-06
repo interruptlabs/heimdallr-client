@@ -8,6 +8,7 @@ The Heimdallr client is registered as a system wide URI handler. This means that
 
 1. Install [heimdallr-ida](https://github.com/interruptlabs/heimdallr-ida)
 2. Install heimdallr-client with pip
+    - You may need poetry depending on your python version `pip3 install poetry`
     - Using git directly `pip3 install -e git+https://git@github.com/interruptlabs/heimdallr-client.git#egg=heimdallr_client`
     - From a cloned repo `pip3 install -e .`
 3. Verify `settings.json` has been created in the relevant application directory
