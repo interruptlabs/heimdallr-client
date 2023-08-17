@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Resolves ida:// URIs to the correct IDA instance. Finds correct IDB file and opens IDA if not found.
+Resolves ida:// and disas:// URIs to the correct IDA instance. Finds correct IDB file and opens IDA if not found.
 Exit Codes:
 1 - IDB not found
 0 - Success
@@ -135,7 +135,7 @@ def get_history_v2() -> Tuple[list[str], dict[str, str]]:
     global idauser_path
     history_path = idauser_path / "history.2.json"
     
-    log.debug(f"History file at {history_path}")
+    log.debug(f"History file v2 at {history_path}")
 
     if not history_path.exists():
         log.warning("History file was not found")
@@ -543,7 +543,7 @@ def run(url):
         if not parsed_url:
             error_message(f"Unable to parse url {url}", -4)
 
-        if parsed_url.scheme != "ida":
+        if parsed_url.scheme != "ida" and parsed_url.scheme != "disas":
             error_message(f"Unexpected URL scheme {parsed_url.scheme}", -4)
         
         if not parsed_url.query:

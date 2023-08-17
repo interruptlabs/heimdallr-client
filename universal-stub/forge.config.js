@@ -3,7 +3,7 @@ module.exports = {
     "protocols": [
       {
         "name": "IDA Heimdallr Deeplink",
-        "schemes": ["ida"]
+        "schemes": ["ida", "disas"]
       }
     ]
   },

@@ -11,7 +11,7 @@ If you dislike Electron, feel free to send over a [pull request](https://github.
 # Install
 1. Install the [heimdallr_client](../README.md) using pip
 2. Download the platform specific stub from [releases](https://github.com/interruptlabs/heimdallr-client/releases)
-3. Run the app once to allow it to register with the system as the `ida://` URI handler.
+3. Run the app once to allow it to register with the system as the `disas://` and `ida://` URI handler.
 4. Locate the `heimdallr_client` binary on your file system
     - MacOS/Linux - `whereis heimdallr_client`
     - Windows - `pip show -f heimdallr-client` - Look for the "heimdallr_client.exe", path will be relative to the listed `location`
@@ -32,7 +32,7 @@ Example Config:
 ```
 
 # Build your own / Development
-If GitHub doesn't have a package for your directory, you can build with NPM
+If GitHub doesn't have a package for your distribution, you can build with NPM
 
 1. Install NPM
 2. Build package
