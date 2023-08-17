@@ -17,6 +17,7 @@ import logging as log
 from urllib.parse import urlparse, parse_qsl, unquote
 from typing import Optional, Tuple, NoReturn
 from pathlib import Path
+from itertools import chain
 
 import platform, os, json, time, traceback, random
 import subprocess
@@ -37,18 +38,7 @@ ida_location = None
 # Per Platform Global Paths
 heimdallr_path = None
 idauser_path = None
-
-def error_message(error : str, exit_code : int) -> NoReturn:
-    """Generic error message dialogue box to provide feedback to user on failure reasons.
-    
-    Args:
-    - error : Error message to be displayed
-    - exit_code : Exit code to exit with
-    
-    * DOES NOT RETURN *
-    """
-    title = "Heimdallr Error"
-    error = str(error)
+def alert(title, error):
     if platform.system() == "Windows":
         from ctypes import windll
         windll.user32.MessageBoxW(0, error, title, 0)
@@ -61,6 +51,21 @@ def error_message(error : str, exit_code : int) -> NoReturn:
     elif platform.system() == "Linux":
         import easygui # tk not installed by default in brew Python
         easygui.msgbox(error, title)
+
+def error_message(error : str, exit_code : int) -> NoReturn:
+    """Generic error message dialogue box to provide feedback to user on failure reasons.
+    
+    Args:
+    - error : Error message to be displayed
+    - exit_code : Exit code to exit with
+    
+    * DOES NOT RETURN *
+    """
+    title = "Heimdallr Error"
+    error = str(error)
+    
+    alert(title, error)
+
     sys.exit(exit_code)
 
 def set_global_paths() -> None:
@@ -124,13 +129,33 @@ def get_history() -> list[str]:
     log.info(f"History file contains {len(history)} items")
     return history
 
+def get_history_v2() -> Tuple[list[str], dict[str, str]]:
+    """Returns the history.2.json file containing recently opened IDBs and hashes. This is generated
+    by the heimdallr_ida plugin on each launch from IDAs internal records."""
+    global idauser_path
+    history_path = idauser_path / "history.2.json"
+    
+    log.debug(f"History file at {history_path}")
 
-def find_rpc(idb_name : str, file_hash : Optional[str] = None) -> Optional[Tuple[str, Path]]:
+    if not history_path.exists():
+        log.warning("History file was not found")
+        return None
+
+    with open(history_path) as fd:
+        history = json.load(fd)
+    
+    files = history['files']
+    hash_table = history['hash_table']
+    
+    log.info(f"History file contains {len(files)} items")
+    return files, hash_table
+
+def find_rpc(db_name : Optional[str], file_hash : str) -> Optional[Tuple[str, Path]]:
     """
     Searches the rpc_endpoints directory for open IDA instances with a given name and optional MD5 hash for verification
     
     Args:
-    - idb_name - name of IDB
+    - db_name - name of IDB - None if in compatability mode
     - file_hash - md5 hash of input file
     
     Returns:
@@ -167,11 +192,11 @@ def find_rpc(idb_name : str, file_hash : Optional[str] = None) -> Optional[Tuple
             continue
         
         # Validate db name matches the one we're looking for
-        if endpoint.get("file_name", None) != idb_name:
+        if db_name and endpoint.get("file_name", None) != db_name:
             continue
         
         # Validate we're checking input hash and if so, it matches what we're looking for
-        if file_hash and endpoint.get("file_hash", None) != file_hash:
+        if endpoint.get("file_hash", None) != file_hash:
             continue
         
         # Validate endpoint has address
@@ -180,19 +205,19 @@ def find_rpc(idb_name : str, file_hash : Optional[str] = None) -> Optional[Tuple
             log.error(f"Malformed RPC information at {endpoint_path}")
             continue
         
-        log.info(f"Matching endpoint found for {idb_name} - {endpoint_path}")
+        log.info(f"Matching endpoint found for {endpoint.get('file_name')} - {endpoint_path}")
         return rpc_address, endpoint_path
     
-    log.info(f"Endpoint not found for idb: {idb_name} hash: {file_hash}")
+    log.info(f"Endpoint not found for idb: {db_name} hash: {file_hash}")
     return None
 
-def poll_rpc(idb_name : str, file_hash : Optional[str] = None, limit = 32) -> Optional[Tuple[str, Path]]:
+def poll_rpc(db_name : str, file_hash : str, limit = 32) -> Optional[Tuple[str, Path]]:
     """
     Repeatedly searches the rpc_endpoints directory for open IDA instances with a given name and optional MD5 hash for verification.
     Used when waiting for IDA to open a file.
 
     Args:
-    - idb_name - name of IDB
+    - db_name - name of IDB
     - file_hash - md5 hash of input file
     
     Returns:
@@ -209,7 +234,7 @@ def poll_rpc(idb_name : str, file_hash : Optional[str] = None, limit = 32) -> Op
     while (time.time() + backoff) < timeout:
         log.debug(f"Backoff: {backoff} Limit Time: {timeout}")
         time.sleep(backoff)
-        result = find_rpc(idb_name, file_hash=file_hash)
+        result = find_rpc(db_name, file_hash)
         if result != None:
             return result
     log.error("Polling for valid gRPC instance failed")
@@ -243,59 +268,66 @@ def add_extension(path : Path, ext: str) -> Path:
     new_path = str_path + ext
     return Path(new_path)
 
-def search_history(target_idb_name : str, file_hash : Optional[str] = None) -> Optional[Path]:
+def search_history(db_name : Optional[str], file_hash : str) -> Optional[Path]:
     """Searches recently opened IDBs for the one requested
     
     Args:
-    - idb_name - name of IDB
+    - db_name - name of database, none if in compatability mode
     - file_hash - md5 hash of input file
     
     Returns:
     Optional path to the matching IDB. None if not found.
     """
 
-    history = get_history()
+    history = get_history_v2()
+    if not history or len(history) != 2:
+        return None
+    
+    files, hash_table = history
 
-    for item in history:
+    for item in files:
         # Files opened in IDA for the first time don't have the IDB extension - this adds the extension where required.
         idb_path = Path(item)
         idb_name = idb_path.name
         
-        if idb_name[-3:] not in idb_exts:
-            # Adopt file extension from source URI
-            idb_path = add_extension(idb_path, target_idb_name[-4:])
+        if db_name and idb_name[-3:] not in idb_exts:
+            # Adopt file extension from source URI if not in file
+            # Happens when people open file for first time instead of db
+            idb_path = add_extension(idb_path, db_name[-4:])
             idb_name = idb_path.name
         
         # Validate IDB still exists
         if not idb_path.exists():
             continue
 
-        # Validate file is the one we're looking for
-        if idb_name != target_idb_name:
+        # Validate filename is the one we're looking for if valid
+        if db_name and idb_name != db_name:
             continue
         
-        # Validate we're checking input hash and if so, it matches what we're looking for
-        if file_hash and not verify_db(idb_path, file_hash=file_hash):
+        # Validate file has expected 
+        if item in hash_table and hash_table[item] != file_hash:
+            continue
+        elif item not in hash_table and not verify_db(idb_path, file_hash):
             continue
         
-        log.info(f"Matching IDB found at {target_idb_name} in IDA history")
+        log.info(f"Matching IDB found at {idb_path} in IDA history")
         return idb_path
     
-    log.info(f"IDB not found in history: {idb_name} hash: {file_hash}")
+    log.info(f"IDB not found in history: {db_name} hash: {file_hash}")
     return None
 
-def search_idb_path(idb_name : str, file_hash : Optional[str] = None) -> Optional[Path]:
+def search_idb_path(db_name : Optional[str], file_hash : str) -> Optional[Path]:
     """Searches IDB Path from settings file for matching IDB. Last resort.
     
     Args:
-    - idb_name - name of IDB
+    - idb_name - name of IDB - None if in compatability mode
     - file_hash - md5 hash of input file
     
     Returns:
     Optional path to the matching IDB. None if not found.
     """
     global idb_path
-    log.info(f"Searching {len(idb_path)} IDB paths for {idb_name}")
+    log.info(f"Searching {len(idb_path)} IDB paths for {db_name}")
 
     if not idb_path:
         log.error("IDB Path not set or empty")
@@ -306,39 +338,42 @@ def search_idb_path(idb_name : str, file_hash : Optional[str] = None) -> Optiona
         if not item.exists():
             log.warning(f"{item} in IDB path did not exist")
             continue
-        
-        glob = item.glob(f"**/{idb_name}")
+        if db_name:
+            glob = item.glob(f"**/{db_name}")
+        else:
+            glob = chain(item.glob(f"**/*.i64"), item.glob(f"**/*.idb"))
+                
         for potential_idb in glob:
-            if file_hash and not verify_db(potential_idb, file_hash):
+            if not verify_db(potential_idb, file_hash):
                 continue
             log.info(f"Matching IDB found at {potential_idb} in IDB path")
             return potential_idb
     
-    log.info(f"IDB not found in IDB Path: {idb_name} hash: {file_hash}")
+    log.info(f"IDB not found in IDB Path: {db_name} hash: {file_hash}")
     return None
 
-def search_idb(idb_name : str, file_hash : Optional[str] = None) -> Optional[Path]:
+def search_idb(db_name : Optional[str], file_hash : str = None) -> Optional[Path]:
     """Searches for IDB. Looks first in IDA history, then falls back to IDB path from settings.
     
     Args:
-    - idb_name - name of IDB
+    - idb_name - name of IDB - Optional in compatability mode
     - file_hash - md5 hash of input file
     
     Returns:
     Optional path to the matching IDB. None if not found.
     """
-    path = search_history(idb_name, file_hash=file_hash)
+    path = search_history(db_name, file_hash)
     if path:
         return path
     
-    path = search_idb_path(idb_name, file_hash=file_hash)
+    path = search_idb_path(db_name, file_hash)
     if path:
         return path
-    error_message(f"Unable to find {idb_name}", 1)    
+    error_message(f"Unable to find {db_name}:{file_hash}", 1)    
     
 
 
-def launch_ida(idb_name : str, file_hash : Optional[str] = None) -> None:
+def launch_ida(idb_name : str, file_hash : str) -> None:
     """Searches for IDB. Looks first in IDA history, then falls back to IDB path from settings.
     
     Args:
@@ -351,8 +386,8 @@ def launch_ida(idb_name : str, file_hash : Optional[str] = None) -> None:
     Exits:
     On file not found or unsupported platform
     """
-    # Search recents
-    path = search_idb(idb_name, file_hash=file_hash)
+    # Search recents and path
+    path = search_idb(idb_name, file_hash)
     if not path:
         sys.exit(1)
 
@@ -485,7 +520,7 @@ def check_lock(idb_name : str, file_hash : str) -> bool:
 
 
 def run(url):
-    idb_name = None
+    db_name = None
     file_hash = None
     locked = False
     try:
@@ -506,12 +541,16 @@ def run(url):
         
         query = dict(parse_qsl(parsed_url.query))
         
-        idb_name = parsed_url.netloc
+        db_name = parsed_url.netloc
         file_hash = query.get("hash", None)
+        type = query.get("type", None)
+        
+        if type != None and type != "ida": # Assume IDA if no type
+            db_name = None # Drop name as it's not useful
         
         locked = True
-        lock_search(idb_name, file_hash)
-        if not check_lock(idb_name, file_hash):
+        lock_search(db_name, file_hash)
+        if not check_lock(db_name, file_hash):
             raise RuntimeError("Can only have request for single database at a time!")
         
 
@@ -521,12 +560,12 @@ def run(url):
         while not finished:
 
             # Look for open IDA instance with our results        
-            result = find_rpc(idb_name, file_hash)
+            result = find_rpc(db_name, file_hash)
             if not result:
                 # Couldn't find a currently open IDA istance
-                launch_ida(idb_name, file_hash)
+                launch_ida(db_name, file_hash)
                 
-                result = poll_rpc(idb_name, file_hash)
+                result = poll_rpc(db_name, file_hash)
                 if not result:
                     error_message(f"Could not find IDA instance when opening {idb_name}", -6)
                 # Placebo sleep just to make sure IDA is going to be receptive to GUI manipulation            
@@ -573,6 +612,7 @@ def start():
         run(''.join(sys.argv[1:]))
     except Exception as e:
         log.exception("Unhandled exception!")
+        traceback.print_exception(e)
         error_message(traceback.format_exception_only(e)[-1], -1)
         
 if __name__ == '__main__':
