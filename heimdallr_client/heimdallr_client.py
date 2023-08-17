@@ -284,10 +284,18 @@ def search_history(db_name : Optional[str], file_hash : str) -> Optional[Path]:
     history = get_history_v2()
     if not history or len(history) != 2:
         files = get_history()
-    if not files:
-        return
-        
+        if not files:
+            return
+
     files, hash_table = history
+
+    for path, hash in hash_table.items():
+        log.debug(f"Checking {hash} against {file_hash}")
+        if hash != file_hash:
+            continue
+        if db_name and db_name != path:
+            continue
+        return path
 
     for item in files:
         # Files opened in IDA for the first time don't have the IDB extension - this adds the extension where required.
@@ -308,10 +316,8 @@ def search_history(db_name : Optional[str], file_hash : str) -> Optional[Path]:
         if db_name and idb_name != db_name:
             continue
         
-        # Validate file has expected 
-        if hash_table and item in hash_table and hash_table[item] != file_hash:
-            continue
-        elif not verify_db(idb_path, file_hash):
+        # Validate db has expected input hash
+        if not verify_db(idb_path, file_hash):
             continue
         
         log.info(f"Matching IDB found at {idb_path} in IDA history")
