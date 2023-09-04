@@ -184,16 +184,22 @@ def find_rpc(db_name : Optional[str], file_hash : str) -> Optional[Tuple[str, Pa
         return None
     
     for endpoint_path in rpc_path.glob('./*'):
+        log.info(endpoint_path)
         with open(endpoint_path, "r") as fd:
             endpoint = json.load(fd)
 
+        log.info(endpoint)
         # Validate json has something for us to look at
         if not endpoint or len(endpoint) == 0:
             continue
         
+        log.info(db_name)
+        
         # Validate db name matches the one we're looking for
         if db_name and endpoint.get("file_name", None) != db_name:
             continue
+        
+        log.info("hash check")
         
         # Validate we're checking input hash and if so, it matches what we're looking for
         if endpoint.get("file_hash", None) != file_hash:
@@ -551,19 +557,28 @@ def run(url):
         
         query = dict(parse_qsl(parsed_url.query))
         
-        db_name = parsed_url.netloc
-        file_hash = query.get("hash", None)
-        type = query.get("type", None)
+        db_name = None
+        file_hash = None
+        type = None
+        
+        if parsed_url.scheme == "disas":
+            db_name = query.get("path", None)
+            file_hash = parsed_url.netloc
+            type = query.get("type", None)   
+        else:
+            db_name = parsed_url.netloc
+            file_hash = query.get("hash", None)
+            type = query.get("type", None)   
         
         if type != None and type != "ida": # Assume IDA if no type
             db_name = None # Drop name as it's not useful
+        
+        log.info(f"Starting search for {db_name}:{file_hash}")
         
         locked = True
         lock_search(db_name, file_hash)
         if not check_lock(db_name, file_hash):
             raise RuntimeError("Can only have request for single database at a time!")
-        
-
 
         finished = False
         # Loop a few times incase there is a dead endpoint in our directory from a crashed IDA instance
