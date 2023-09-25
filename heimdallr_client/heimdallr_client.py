@@ -559,19 +559,14 @@ def run(url):
         
         db_name = None
         file_hash = None
-        type = None
         
         if parsed_url.scheme == "disas":
-            db_name = query.get("path", None)
+            db_name = query.get("idb", None)
             file_hash = parsed_url.netloc
-            type = query.get("type", None)   
         else:
             db_name = parsed_url.netloc
             file_hash = query.get("hash", None)
-            type = query.get("type", None)   
         
-        if type != None and type != "ida": # Assume IDA if no type
-            db_name = None # Drop name as it's not useful
         
         log.info(f"Starting search for {db_name}:{file_hash}")
         
