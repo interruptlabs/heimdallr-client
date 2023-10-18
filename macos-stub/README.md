@@ -21,6 +21,7 @@ heimdallr_client: /opt/homebrew/bin/heimdallr_client
         <key>CFBundleURLSchemes</key>
         <array>
             <string>ida</string>
+            <string>disas</string>
         </array>
     </dict>
     </array>
