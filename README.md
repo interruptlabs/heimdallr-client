@@ -20,9 +20,9 @@ The Heimdallr client is registered as a system wide URI handler. This means that
 
 # Ghidra Cross Compatabiltity
 
-The wonderful people over at Foundry Zero have created a Ghidra plugin which offers the same functionality. You can get it [here](TODO)
+The wonderful people over at Foundry Zero have created a Ghidra plugin which offers the same functionality. You can get it [here](https://github.com/foundryzero/ghidra-deep-links)
 
-The plugins are compatible, meaning links created with their plugin can be opened in IDA with this client, and vice versa.
+The plugins are compatible, meaning links created with their plugin can be opened in IDA with this client, and vice versa. This allows you to collaborate with other researchers regardless of the disassembler you use!
 
 ## MacOS
 
