@@ -8,7 +8,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [macos-14, macos-latest, ubuntu-latest, windows-latest]
 
     steps:
       - name: Check out Git repository
@@ -17,7 +17,7 @@ jobs:
       - name: Install Node.js, NPM and Yarn
         uses: actions/setup-node@v1
         with:
-          node-version: 18
+          node-version: 21
 
       - name: Build/release Electron app
         uses: KL13NT/action-electron-forge@9c2ad05cca5b9d3eb6026b39c7c3fe7d8cf80b2e
