@@ -1,7 +1,7 @@
 {
   "name": "heimdallr-stub",
   "productName": "heimdallr-stub",
-  "version": "0.7.1",
+  "version": "0.8.0",
   "description": "WIP: Cross-platform stub to hook URLs for Heimdallr",
   "main": "src/index.js",
   "scripts": {
@@ -23,12 +23,12 @@
     "electron-squirrel-startup": "^1.0.0"
   },
   "devDependencies": {
-    "@electron-forge/cli": "^6.0.5",
-    "@electron-forge/maker-deb": "^6.0.5",
-    "@electron-forge/maker-rpm": "^6.0.5",
-    "@electron-forge/maker-squirrel": "^6.0.5",
-    "@electron-forge/maker-zip": "^6.0.5",
-    "electron": "23.0.0",
-    "@electron-forge/publisher-github": "^6.0.5"
+    "@electron-forge/cli": "^7.3.1",
+    "@electron-forge/maker-deb": "^7.3.1",
+    "@electron-forge/maker-rpm": "^7.3.1",
+    "@electron-forge/maker-squirrel": "^7.3.1",
+    "@electron-forge/maker-zip": "^7.3.1",
+    "electron": "29.2.0",
+    "@electron-forge/publisher-github": "^7.3.1"
   }
 }
