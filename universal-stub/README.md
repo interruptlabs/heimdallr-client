@@ -3,7 +3,7 @@
 
 This is a cross-platform URI stub based on Electron to forward URL events to the python-based `heimdallr_client.py`.
 
-The [macos-stub](../macos-stub/README.md) is still recommended for MacOS users for lower overheads. Especially on ARM64 as the releases currently are x86 only which significantly impacts responsiveness due rosetta startup costs. 
+The [macos-stub](../macos-stub/README.md) is still recommended for MacOS users for lower overheads. If you choose to use the Electron stub make sure you match your architecture as Rosetta startup costs will cause a significant delay in resolving your URIs. 
 
 If you dislike Electron, feel free to send over a [pull request](https://github.com/interruptlabs/heimdallr-client/pulls) with a platform specific method for your OS of choice.
 
