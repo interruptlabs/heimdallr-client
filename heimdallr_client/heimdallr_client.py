@@ -299,7 +299,10 @@ def search_history(db_name : Optional[str], file_hash : str) -> Optional[Path]:
         log.debug(f"Checking {hash} against {file_hash}")
         if hash != file_hash:
             continue
-        if db_name and db_name != path:
+        file_path = Path(path)
+        if not file_path.exists():
+            continue
+        if db_name and db_name != file_path.name:
             continue
         return path
 
@@ -632,8 +635,8 @@ def start():
         run(''.join(sys.argv[1:]))
     except Exception as e:
         log.exception("Unhandled exception!")
-        traceback.print_exception(e)
-        error_message(traceback.format_exception_only(e)[-1], -1)
+        traceback.print_exception(type(e), e)
+        error_message(traceback.format_exception_only(type(e), e)[-1], -1)
         
 if __name__ == '__main__':
     start()
