@@ -352,7 +352,7 @@ def search_idb_path(db_name : Optional[str], file_hash : str) -> Optional[Path]:
         log.error("IDB Path not set or empty")
         return None
     
-    idb_path = map(Path, idb_path)
+    idb_path = list(map(Path, idb_path))
     for item in idb_path:
         if not item.exists():
             log.warning(f"{item} in IDB path did not exist")
@@ -538,7 +538,7 @@ def check_lock(idb_name : str, file_hash : str) -> bool:
 
 
 
-def run(url):
+def run(url: str):
     db_name = None
     file_hash = None
     locked = False
@@ -590,7 +590,7 @@ def run(url):
                 
                 result = poll_rpc(db_name, file_hash)
                 if not result:
-                    error_message(f"Could not find IDA instance when opening {idb_name}", -6)
+                    error_message(f"Could not find IDA instance when opening {db_name}", -6)
                 # Placebo sleep just to make sure IDA is going to be receptive to GUI manipulation            
             
             try:
@@ -635,8 +635,8 @@ def start():
         run(''.join(sys.argv[1:]))
     except Exception as e:
         log.exception("Unhandled exception!")
-        traceback.print_exception(type(e), e)
-        error_message(traceback.format_exception_only(type(e), e)[-1], -1)
+        traceback.print_exception(e)
+        error_message(traceback.format_exception_only(e)[-1], -1)
         
 if __name__ == '__main__':
     start()
